@@ -14,13 +14,13 @@ $matches = article_search();
 ?>
 
 <div class="jumbotron">
-  <h1><img class="pwg-logo pwg-right hidden-xs" src="<?print($html_path);?>dynamo/resources/pwg-medium@2x.png">The Printer Working Group<?if ($SITE_SHOW_BETA)print(" Beta Test Site");?></h1>
+  <h1><img class="pwg-logo pwg-right hidden-xs" src="<?= $html_path ?>dynamo/resources/pwg-medium@2x.png">The Printer Working Group<?php if ($SITE_SHOW_BETA)print(" Beta Test Site");?></h1>
   <p>Our members include printer and multi-function device manufacturers, print server developers, operating system providers, print management application developers, and industry experts. We make printers, multi-function devices, and the applications and operating systems supporting them work together better.</p>
-  <p><a class="btn btn-primary btn-lg" href="<?print($html_path);?>about.html">More Info</a>
+  <p><a class="btn btn-primary btn-lg" href="<?= $html_path ?>about.html">More Info</a>
   &nbsp;<a class="btn btn-default btn-lg" href="#NEWS">Recent News</a></p>
 </div>
 
-<?
+<?php
 
 $firsttime = TRUE;
 $today     = date("Y-m-d");
@@ -62,7 +62,7 @@ if (!$firsttime)
       <div class="panel-heading">3D Printing</div>
       <div class="panel-body">
         <p>The PWG has defined an IPP extension for 3D printing using standard file formats and an associated XML print job ticket format.</p>
-        <p><a class="btn btn-default btn-sm" href="<?print($html_path);?>3d">More Info</a></p>
+        <p><a class="btn btn-default btn-sm" href="<?= $html_path ?>3d">More Info</a></p>
       </div>
     </div>
   </div>
@@ -71,8 +71,8 @@ if (!$firsttime)
       <div class="panel-heading">IPP Everywhere&trade;</div>
       <div class="panel-body">
 	<p>Print to any network or USB printer without using special software from the manufacturer.</p>
-	<p><a class="btn btn-default btn-sm" href="<?print($html_path);?>ipp/everywhere.html">More Info</a>
-	&nbsp;<a class="btn btn-default btn-sm" href="<?print($html_path);?>dynamo/eveprinters.php">Find Printers</a></p>
+	<p><a class="btn btn-default btn-sm" href="<?= $html_path ?>ipp/everywhere.html">More Info</a>
+	&nbsp;<a class="btn btn-default btn-sm" href="<?= $html_path ?>dynamo/eveprinters.php">Find Printers</a></p>
       </div>
     </div>
   </div>
@@ -81,7 +81,7 @@ if (!$firsttime)
       <div class="panel-heading">PWG Semantic Model</div>
       <div class="panel-body">
         <p>Support multiple network protocols and job ticket formats using our abstract model.</p>
-        <p><a class="btn btn-default btn-sm" href="<?print($html_path);?>sm/model.html">More Info</a></p>
+        <p><a class="btn btn-default btn-sm" href="<?= $html_path ?>sm/model.html">More Info</a></p>
       </div>
     </div>
   </div>
@@ -90,7 +90,7 @@ if (!$firsttime)
       <div class="panel-heading">Standards</div>
       <div class="panel-body">
         <p>PWG Standards define all of the common network protocols used by your printer.</p>
-        <p><a class="btn btn-default btn-sm" href="<?print($html_path);?>standards.html">More Info</a></p>
+        <p><a class="btn btn-default btn-sm" href="<?= $html_path ?>standards.html">More Info</a></p>
       </div>
     </div>
   </div>
@@ -99,7 +99,7 @@ if (!$firsttime)
       <div class="panel-heading">SNMP MIBs</div>
       <div class="panel-body">
         <p>Monitor jobs, status, and supplies, and manage your printers remotely using SNMP.</p>
-        <p><a class="btn btn-default btn-sm" href="<?print($html_path);?>wims/index.html">More Info</a></p>
+        <p><a class="btn btn-default btn-sm" href="<?= $html_path ?>wims/index.html">More Info</a></p>
       </div>
     </div>
   </div>-->
@@ -108,7 +108,7 @@ if (!$firsttime)
 <div class="col-md-12">
   <div class="panel panel-default"><div class="panel-heading"><a name="NEWS">PWG News</a></div>
   <div class="panel-body">
-<?
+<?php
 
 for ($i = 0, $count = 0; $i < sizeof($matches) && $count < 5; $i ++)
 {
