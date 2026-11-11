@@ -208,6 +208,19 @@ The current architecture was designed and built roughly ten years ago (around 20
 
 - **JPEG files are mislabeled.** In `wrap.php`, the JPEG test is written as `/\.(jpg,jpeg)$/` instead of `/\.(jpg|jpeg)$/`, so it never matches. (It is only reached if a JPEG request is routed to the wrapper.)
 - **Search depends on Google.** Search uses an embedded Google Programmable Search box, which brings third-party tracking and ads, offers limited control over results, and does not index content behind login.
+- **Broken links and dead third-party resources.** A W3C Link Checker run on the home page (November 2026, one document, not recursive) reported a 404, a failed connection and two redirects. All but one come from the shared template, so they affect **every page**:
+  - `https://www.google.com/cse/style/look/default.css`, loaded in every page's `<head>` (`site_header()`), returns **404**.
+  - The privacy-policy link `https://ieee-isto.org/privacy-policy/`, in both the About menu and the footer, is **dead**. IEEE-ISTO renamed itself ISTO and did not keep `ieee-isto.org` redirecting, and the domain no longer resolves in DNS. **To fix:** all five live references (`site.php` ×2, `pwg-cookie-notice.js`, `ipp/iana-registry.xsl` ×2) should become `https://isto.org/privacy-policy/`, which works.
+  - About 20 historical meeting pages (2000–2011, under `chair/meeting-info/`) link to `www.ieee-isto.org/pwg/registration.*` and `intranet.ieee-isto.org`. Those registration pages don't exist on `isto.org` either (404), so changing the domain would not help. *(Decide whether to leave them as historical record, or remove the links but keep the text.)*
+  - Several current pages and files still use the old name "IEEE-ISTO" in their text (`standards.html`, `namespaces.html`, `chair/participating.html`, `NOTICE`, `ipp/iana-registry.xsl`). Historical blog posts should keep the name they were published with. *(Updating the name in current pages, especially copyright and legal notices, should be checked with ISTO.)*
+  - `https://www.google.com/jsapi`, loaded in every page's footer, **permanently redirects** to Google's unrelated Charts loader, and nothing in the footer uses it.
+  - The home page links to `/3d` without a trailing slash, which causes a redirect to `/3d/` (minor; in `dynamo/index.php`).
+
+  Other checks of the template and pages found:
+  - The standalone `search.html` page uses the long-retired Google AJAX Search API (`google.load('search')`), loaded over plain `http://`, so it no longer works. The navbar's search dialog uses the current `cse.js` and does work.
+
+  *(A recursive run, using the online checker's "Check linked documents recursively" option, which is limited to 150 documents, or `checklink --recursive` from the command line, is still needed to find broken links inside individual pages.)*
+  - The placeholder `informational.html` still references files that don't exist (`dynamo/resources/jquery-1.11.1.min.js`, `presentations/...`). It is normally replaced by `informational.php`, but it is stale.
 - **Settings are hard-coded.** Standards series names (5100–5110) are hard-coded in `standards.php`, and the AWStats link and sender addresses are hard-coded in scripts.
 - **Mixed `http://` and `https://` links.** Some page content and configuration templates still use `http://` URLs and old domain names (for example `www.isto.org`).
 - **No private or embargoed self-certification submissions.** Since 2020, every IPP Everywhere listing is a hand edit to a public JSON file in a public Git repository. Vendors cannot submit results privately, cannot set a release date, and cannot see or manage their own submissions. The listing volunteer has to do every addition by hand, and anything committed is public immediately, including in the repository's history. This is a frequent request from submitters.
@@ -525,7 +538,7 @@ The upgrade is staged so the site keeps working at every step, and so the work t
 
 #### 1.1 Set Up a Test Environment
 
-- **Development:** a local Linux system (for example Ubuntu 24.04, which ships PHP 8.3, Apache with `mod_actions`, and MariaDB as standard packages) loaded from `dynamo/config/pwg.sql` and `test.sql`. A local mail catcher (such as Mailpit) captures the site's outgoing email for inspection. Optionally, a Docker Compose file in the repository would let any contributor run the same setup with one command.
+- **Development:** a local Linux system loaded from `dynamo/config/pwg.sql` and `test.sql`. The development machine is Ubuntu 26.04.1 LTS (x86_64), whose standard packages provide **PHP 8.5**, Apache 2.4.66 (including `mod_actions`) and MariaDB 11.8. PHP 8.5 is newer than what the managed host is likely to run, so code is developed and tested on 8.5, statically checked for 8.2 and later (PHPCompatibility `testVersion 8.2-`), and checked on the host's actual version on the staging site. A scan found none of PHP 8.5's new deprecations in the code (non-canonical casts such as `(integer)`, the backtick operator). A local mail catcher (such as Mailpit) captures the site's outgoing email for inspection. Optionally, a Docker Compose file in the repository would let any contributor run the same setup with one command.
 - **Shared testing (staging):** a copy on a test subdomain of the ICDSoft account, protected by a password and excluded from search engines. Other reviewers can test there without any setup, and it shows problems specific to the host (PHP settings, `.htaccess` and `Action` support, outgoing mail) before production is touched.
 - **Test data:** use the test data or a sanitized copy of production. Real user records (email addresses, password hashes) should not be copied to the staging site.
 - Write a short manual test checklist that covers each dynamo page and role: anonymous visitor, member, editor, officer and admin. It should cover the home page, standards and informational lists, login, password reset, account creation, document create/edit/upload, article management, issue tracking, and the organization, workgroup and user admin pages.
@@ -561,7 +574,7 @@ Most of these changes are standard migrations with mature, free tools. Run the t
 3. **Apply the fixes automatically with Rector**, using its `UP_TO_PHP_82` level set (or a later one). It includes rules for PHP 4-style constructors to `__construct()`, `while (list(...) = each(...))` to `foreach`, and `${var}` to `{$var}` interpolation.
 4. **Make the behavior changes by hand:** PDO error mode, loose comparisons, `count()` on non-arrays and input type checks. Tools cannot reliably detect or fix these, which is why the manual test checklist (1.1) matters.
 
-**Target version:** PHP 8.2's security support ends on December 31, 2026. Making the code clean for 8.2 should be treated as the minimum, and it should be *deployed* on 8.3 or later. A code scan found no idioms affected by the breaking changes in 8.3 or 8.4, so this should cost little or no extra work. The PHPCompatibility report (step 2) will confirm.
+**Target version:** PHP 8.2's security support ends on December 31, 2026. Making the code clean for 8.2 should be treated as the minimum, and it should be *deployed* on 8.3 or later. A code scan found no idioms affected by the breaking changes in 8.3, 8.4 or 8.5, so this should cost little or no extra work. The PHPCompatibility report (step 2) will confirm.
 
 #### 1.4 Low-Cost Fixes While the Code Is Open
 
@@ -569,7 +582,8 @@ These are small and independent, and they address problems listed earlier withou
 
 - **Webhook:** verify GitHub's `X-Hub-Signature-256` (HMAC-SHA256) header and compare with `hash_equals()`.
 - **Passwords:** switch to `password_hash()` and `password_verify()`, re-hashing each user's password the next time they log in successfully, so no one has to reset a password.
-- **Front-end libraries:** move Bootstrap 3.3.7 to 3.4.1 (a drop-in release that fixes known XSS issues) and jQuery to the latest 3.x release. Remove the retired `google.com/jsapi` loader and the unused Bootstrap 3.2.0 files.
+- **Front-end libraries:** move Bootstrap 3.3.7 to 3.4.1 (a drop-in release that fixes known XSS issues) and jQuery to the latest 3.x release. Remove the retired `google.com/jsapi` loader, the 404ing Google CSE stylesheet link, and the unused Bootstrap 3.2.0 files.
+- **Broken links:** run the W3C Link Checker before and after Phase 1. Change the five `ieee-isto.org/privacy-policy/` links (`site.php` ×2, `pwg-cookie-notice.js`, `ipp/iana-registry.xsl` ×2) to `https://isto.org/privacy-policy/`, fix the `/3d` link in `index.php`, and fix or remove `search.html` (point it at the navbar search, or embed the current `cse.js`). Then do a recursive run and fix the broken links it finds inside individual pages. Record the remaining ones for Phase 3, which adds automated link checking.
 - **`wrap.php`:** fix the JPEG pattern (`jpg|jpeg`) and remove the `X-UA-Compatible: IE=9` header.
 - **Document uploads:** replace plain-FTP uploads with an encrypted method (FTPS or SFTP). If the archive ends up on the same host as the site, write the files locally instead.
 
@@ -592,4 +606,4 @@ These are small and independent, and they address problems listed earlier withou
 ## References
 
 - **[BCP14]** S. Bradner, "Key words for use in RFCs to Indicate Requirement Levels", RFC 2119 / BCP 14, March 1997, https://www.rfc-editor.org/info/bcp14
-- **[PWG-COMM-POLICY]** "PWG Communications Policy", draft PWG Policy (status: Initial), April 26, 2021, file `wd-pwg-comm-policy-v1.0-20210510.pdf` (published location: https://ftp.pwg.org/pub/pwg/general/wd/)
+- **[PWG-COMM-POLICY]** "PWG Communications Policy", draft PWG Policy (status: Initial), May 10, 2021 (document dated April 26, 2021), https://ftp.pwg.org/pub/pwg/general/wd/wd-pwg-comm-policy-v1.0-20210510.docx (earlier PDF: https://ftp.pwg.org/pub/pwg/general/wd/wd-pwg-comm-policy-v1.0-20210426.pdf)
