@@ -543,7 +543,8 @@ The upgrade is staged so the site keeps working at every step, and so the work t
 - **Development setup notes** (from setting up the Ubuntu 26.04 system):
   - Ubuntu home folders are private, so run `chmod o+x` on the home folder and project folder for Apache to read the site.
   - Apache must be fully **restarted** (not reloaded) after adding the PHP settings file in `/etc/php/8.5/apache2/conf.d/`.
-  - The repository has no root `index.html`. Production has a placeholder one, and `wrap.php` rejects requests for files that don't exist, so the development virtual host uses `DirectoryIndex /dynamo/index.php`.
+  - The repository has no root `index.html`. Production has a placeholder one, and `wrap.php` rejects requests for files that don't exist, so the development virtual host uses `DirectoryIndex index.html /dynamo/index.php`. (A bare `/dynamo/index.php` would also replace the index pages of folders such as `/ipp/` and `/printers/` with the home page.)
+  - Ubuntu runs Apache with `MemoryDenyWriteExecute=yes`, so PHP logs a "PCRE JIT" warning on every page. Add `pcre.jit = 0` to the PHP settings file.
   - `loadtest.sh` ends with a harmless error about the "submission directory" (a leftover of the retired self-certification system; `SUBMISSION_DIR` is no longer in `site.cfg.tmpl`).
 - **Test data:** use the test data or a sanitized copy of production. Real user records (email addresses, password hashes) should not be copied to the staging site.
 - Write a short manual test checklist that covers each dynamo page and role: anonymous visitor, member, editor, officer and admin. It should cover the home page, standards and informational lists, login, password reset, account creation, document create/edit/upload, article management, issue tracking, and the organization, workgroup and user admin pages.
