@@ -44,8 +44,8 @@ file to `site.cfg` and edit as needed for your local setup.
 An Apache 2.4.x configuration template is called `pwg-apache.conf`.  You'll need
 `mod_actions`, `mod_php`, and `mod_ssl` enabled on your server.
 
-PHP support requires a couple tweaks to the default `php.ini` file, which are
-listed in the `pwg-php.ini` file.
+PHP support requires a larger upload limit than the default `php.ini` file
+allows, as listed in the `pwg-php.ini` file.
 
 The SQL table definitions and sample data are in `pwg.sql`, `selfcert.sql`, and
 `test.sql`.  The `loadtest.sh` script can be used to setup the proper database
