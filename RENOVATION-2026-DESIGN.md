@@ -9,6 +9,7 @@ This GitHub project contains the static source code for the PWG's website (www.p
 The site is a hybrid: mostly hand-written static HTML, plus a small custom PHP application called **dynamo** that applies a common page template and runs the database-backed features (accounts, document registry, news articles, issue tracking). It runs on a traditional LAMP stack:
 
 - **Host:** a single Linode Linux virtual machine, which according to the PWG Communications Policy [PWG-COMM-POLICY] also hosts the FTP site, role email addresses and the Mailman mailing list server
+- **Operating system and versions:** *Observed in November 2026* from the site's `Server` and `X-Powered-By` headers: CentOS 7, Apache 2.4.6, OpenSSL 1.0.2k and **PHP 5.4.16**. PHP 5.4 stopped receiving security fixes in September 2015, and CentOS 7 reached end of life in June 2024, so neither the operating system nor PHP has had security updates for some time.
 - **Web server:** Apache 2.4 with `mod_actions`, `mod_php` and `mod_ssl`
 - **Application:** PHP (no framework, no Composer dependencies), about 9,700 lines across the `dynamo/` directory
 - **Database:** MariaDB/MySQL, accessed through PDO
@@ -184,7 +185,7 @@ The current architecture was designed and built roughly ten years ago (around 20
 
 ### 2. Aging Software Platform
 
-- **The PHP code does not run on currently supported PHP versions.** All eight data classes (`article`, `comment`, `document`, `issue`, `organization`, `printer`, `user`, `workgroup`) use PHP 4-style constructors, where the constructor is a method named after the class. PHP 8.0 no longer treats those methods as constructors, so `new document($id)` would quietly return an empty object, and pages such as the standards list and home page news would render wrong or empty without any error. The code also uses `each()`, which was removed in PHP 8.0, in the bulk-edit handlers of `documents.php`, `accounts.php`, `organizations.php` and `workgroups.php`. It also uses `${var}` string interpolation (39 occurrences in `site.php` alone), which is deprecated as of PHP 8.2. It depends on `short_open_tag = On` and on emulating long-removed PHP global variables. In practice this ties the site to PHP 7.x, which stopped receiving security fixes in late 2022, unless the code is updated.
+- **The PHP code does not run on currently supported PHP versions.** All eight data classes (`article`, `comment`, `document`, `issue`, `organization`, `printer`, `user`, `workgroup`) use PHP 4-style constructors, where the constructor is a method named after the class. PHP 8.0 no longer treats those methods as constructors, so `new document($id)` would quietly return an empty object, and pages such as the standards list and home page news would render wrong or empty without any error. The code also uses `each()`, which was removed in PHP 8.0, in the bulk-edit handlers of `documents.php`, `accounts.php`, `organizations.php` and `workgroups.php`. It also uses `${var}` string interpolation (39 occurrences in `site.php` alone), which is deprecated as of PHP 8.2. It depends on `short_open_tag = On` and on emulating long-removed PHP global variables. In practice this ties the site to PHP 7.x or earlier unless the code is updated. Production actually runs PHP 5.4.16 (see Overview), which stopped receiving security fixes in 2015.
 - **Front-end libraries are years out of date.** Bootstrap 3.3.7 reached end of life in 2019. jQuery 3.2.1 predates fixes for known cross-site scripting vulnerabilities (fixed in jQuery 3.5.0). The footer still loads the retired `www.google.com/jsapi` loader. Unused copies of Bootstrap 3.2.0 remain in `dynamo/resources/`.
 - **There is no dependency management.** Libraries are pinned by hand-written CDN URLs scattered across PHP and HTML files (the printers page loads its own, different jQuery version), so upgrades must be found and made by hand.
 - **Legacy compatibility code is still in place,** such as the `X-UA-Compatible: IE=9` header and the old `PWGContentBody` page-wrapper format that `wrap.php` still parses.
@@ -239,7 +240,7 @@ These problems sit mostly outside the web site, but they affect hosting decision
 
   Fixes generally include rewriting the `From:` header for those senders, DKIM-signing outgoing list mail for `pwg.org`, and publishing correct SPF, DKIM and DMARC records for `pwg.org`. Older Mailman installations support these only partly. *(The current configuration of the PWG list server should be documented here.)*
 - **Incomplete migration to managed hosting.** The ICDSoft account is meant to replace hand administration of the Linode VM, but the move has gaps, and until it is complete the PWG pays for and maintains two environments. *(The specific gaps should be listed here.)* For the web site specifically, the following are likely compatibility points:
-  - dynamo requires PHP 7.x (see section 2), while a managed host keeps PHP up to date.
+  - dynamo requires PHP 7.x or earlier (production runs 5.4; see section 2), while a managed host keeps PHP up to date.
   - Page wrapping depends on Apache's `Action` directive (`mod_actions`).
   - Deployment relies on a webhook that runs `git pull` on the server.
   - Hosting the FTP archive, including anonymous `ftp://` access, at its existing URLs.
@@ -646,6 +647,7 @@ These are small and independent, and they address problems listed earlier withou
 
 #### 1.5 Deploy
 
+- **Until production moves, every change must still run on PHP 5.4.** Merging to `master` deploys `dynamo/` to the Linode site, which runs PHP 5.4.16, through the webhook. So the Phase 1 code has to work on both 5.4 and 8.x. In particular, avoid PHP 7 syntax such as `??`, scalar type declarations and return types. Check with PHPCompatibility using `testVersion 5.4-` before each merge. Once production runs PHP 8, this limit goes away.
 - Deploy to the staging environment and work through the test checklist.
 - Confirm the hosting points listed in Problems, section 6: whether the `Action` directive works on the host (if not, an `.htaccess` `RewriteRule` that sends `.html` requests to `wrap.php` is a likely substitute), how deployment from GitHub will work without a server-side `git pull`, and where the FTP archive is served from.
 - Switch production over, keeping the Linode VM available as a fallback until the new setup has run cleanly for an agreed period.
