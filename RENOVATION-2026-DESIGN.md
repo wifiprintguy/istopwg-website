@@ -8,7 +8,7 @@ This GitHub project contains the static source code for the PWG's website (www.p
 
 The site is a hybrid: mostly hand-written static HTML, plus a small custom PHP application called **dynamo** that applies a common page template and runs the database-backed features (accounts, document registry, news articles, issue tracking). It runs on a traditional LAMP stack:
 
-- **Host:** a single Linode Linux virtual machine, which according to the draft PWG Communications Policy [PWG-COMM-POLICY] also hosts the FTP site, role email addresses and the Mailman mailing list server
+- **Host:** a single Linode Linux virtual machine, which according to the PWG Communications Policy [PWG-COMM-POLICY] also hosts the FTP site, role email addresses and the Mailman mailing list server
 - **Web server:** Apache 2.4 with `mod_actions`, `mod_php` and `mod_ssl`
 - **Application:** PHP (no framework, no Composer dependencies), about 9,700 lines across the `dynamo/` directory
 - **Database:** MariaDB/MySQL, accessed through PDO
@@ -122,7 +122,7 @@ So publishing a typical news item takes several steps in different systems: writ
 - **FTP is the only way to change the live static content.** The Linode site gives contributors no SSH access, so static pages reach the site only by FTP upload to `pub/pwg/www`, separately from the Git repository. *Observed in November 2026:*
   - The FTP server offers encryption (`AUTH SSL`), but the TLS handshake fails with current clients (`dh key too small`): the server's Diffie-Hellman parameters are too weak for modern OpenSSL. In practice, uploads and the FTP password travel unencrypted.
   - The live web root holds **28 top-level entries that are not in the repository**, all still served. They include old workgroup folders (`cam/`, `fin/`, `jmp/`, `mfd/`, `p1394/`, `ps/`, `qualdocs/`, `sdp/`, `sense/`, `updf/`, `wbmm/`, `xhtml-print/`), `mib/`, `schemas/`, `hypermail/`, `press-releases/`, `archive/`, `calls/`, `cr/`, `images/`, `cgi-bin/`, the placeholder `index.html` and a few loose files. The repository is therefore a subset of the live site. A move to a new host, or any automated sync, must keep these (or deliberately redirect or retire them), and must never delete files that are missing from Git.
-- Specifications, drafts, minutes and charters are not in this repository. They live on `ftp.pwg.org` and are linked by URL from the `document` records and static pages. Because those URLs have been cited for about 20 years, the `ftp.pwg.org` archive and its URL structure are a long-term fixture, not a candidate for replacement. As [PWG-COMM-POLICY] notes, many older specifications embed `ftp://` URLs to the site, so it is "risky to 'clean up' anything" there. Newer documents cite the same paths as `https://ftp.pwg.org/pub/pwg/...` URLs, and dynamo rewrites `ftp://ftp.pwg.org/` links to `https://` when a document record is saved. So the path structure under `/pub/pwg/` is what has to be kept on any future host, for both schemes.
+- Specifications, drafts, minutes and charters are not in this repository. They live on `ftp.pwg.org` and are linked by URL from the `document` records and static pages. Because those URLs have been cited for about 20 years, the `ftp.pwg.org` archive and its URL structure are a long-term fixture, not a candidate for replacement. As the 2021 draft of the Communications Policy notes [PWG-COMM-POLICY-DRAFT], many older specifications embed `ftp://` URLs to the site, so it is "risky to 'clean up' anything" there. Newer documents cite the same paths as `https://ftp.pwg.org/pub/pwg/...` URLs (the PWG Document Management Policy [PWG-DOC-MGMT-POLICY] uses that form throughout), and dynamo rewrites `ftp://ftp.pwg.org/` links to `https://` when a document record is saved. So the path structure under `/pub/pwg/` is what has to be kept on any future host, for both schemes.
 - Mailing lists are handled by a separate Mailman installation (`/mailman` is excluded in `robots.txt`; `update-mailman.sh` and `update-archives.sh` are maintenance helpers).
 - HTTP usage statistics come from AWStats (`/awstats/awstats.pl`), which officers and admins reach from the user menu.
 
@@ -145,17 +145,17 @@ The site supports, but does not host, the PWG's standards development process:
   - AsciiDoc rendered to PDF: diffs of plain text full of markup got in the way of review.
   - LibreOffice: its document comparison is less capable than Word's.
   - Some other standards organizations use AsciiDoc on GitHub, with comments and edits made as pull requests. That is not considered realistic for the PWG at this stage.
-- **Open-source tension.** Word is a commercial product, which sits uneasily with the PWG's culture of open source and open standards. It nevertheless remains the working tool, and [PWG-COMM-POLICY] says "no going back to AsciiDoc / Git / GitHub."
+- **Open-source tension.** Word is a commercial product, which sits uneasily with the PWG's culture of open source and open standards. It nevertheless remains the working tool, and the 2021 draft Communications Policy [PWG-COMM-POLICY-DRAFT] says "no going back to AsciiDoc / Git / GitHub."
 
 The renovated site therefore treats the Word-on-archive workflow as fixed (see R-14).
 
 ### Related PWG Infrastructure
 
-The web site is one part of a wider set of PWG communications facilities, inventoried in the 2021 draft PWG Communications Policy [PWG-COMM-POLICY]:
+The web site is one part of a wider set of PWG communications facilities, inventoried in the PWG Communications Policy [PWG-COMM-POLICY], with more detail in its 2021 draft [PWG-COMM-POLICY-DRAFT]:
 
 - **Domains:** `pwg.org`, with the host names `www.pwg.org` and `ftp.pwg.org`.
 - **Role email addresses:** `chair@`, `vice-chair@`, `secretary@`, `pr@` and `webmaster@pwg.org`. These forward mail only; there is no webmail, so officers cannot send mail *from* these addresses.
-- **Mailman mailing lists:** the public, self-subscribed lists with public archives (`pwg@`, `pwg-announce@`), workgroup lists (`ipp@`, `ids@`, `ippeveselfcert@`, `3d-printing@`), and the private Steering Committee list (`sc@`, with no archives and no self-subscription). The policy describes the server as "pretty old" with an "interesting way" of hosting archives. Since then, list mail has had growing delivery problems related to SPF, DKIM and DMARC (see Problems, section 6).
+- **Mailman mailing lists:** the public, self-subscribed lists with public archives (`pwg@`, `pwg-announce@`), workgroup lists (`ipp@`, `ids@`, `ippeveselfcert@`, `3d-printing@`), and the private Steering Committee list (`sc@`, with no archives and no self-subscription). The policy notes the server's "interesting way" of hosting archives, and the 2021 draft also calls it "pretty old". Since then, list mail has had growing delivery problems related to SPF, DKIM and DMARC (see Problems, section 6).
 - **GitHub (`istopwg` organization):** `website`, `ippeveselfcert`, `ippsample`, `ippregistry`, `pwg-books` and `pwg-semantic-model`.
 - **Build automation:** Travis CI was listed in 2021. *(Its free service for open source, travis-ci.org, shut down in 2021, so current status should be checked.)*
 - **Code signing certificates** for official software releases, such as the IPP Everywhere Self-Certification tools.
@@ -205,7 +205,7 @@ The current architecture was designed and built roughly ten years ago (around 20
 - **Fragile email delivery.** Account emails and notifications are sent with PHP's `mail()`, which depends on the host's local mail setup.
 - **No automated checks.** There is no CI, no tests, no link checker and no HTML validation, so regressions and broken links are found only by visitors.
 - **Few maintainers.** Nearly all commits come from two people, and the custom framework has no outside documentation or community.
-- **Hand-managed single server.** The web site, FTP archive, email forwarding and mailing lists all run on one Linux VM that must be patched and administered by hand. [PWG-COMM-POLICY] already names this as something to move away from: services should not require specialist skills, one volunteer's time, or manual VM management.
+- **Hand-managed single server.** The web site, FTP archive, email forwarding and mailing lists all run on one Linux VM that must be patched and administered by hand. The 2021 draft Communications Policy [PWG-COMM-POLICY-DRAFT] already named this as something to move away from: services should not require specialist skills, one volunteer's time, or manual VM management.
 
 ### 5. Functional Defects and Limitations
 
@@ -248,7 +248,7 @@ These problems sit mostly outside the web site, but they affect hosting decision
 
 *This section is being drafted. Numbered requirements are tagged by source:*
 
-- *[POLICY]: the 2021 draft PWG Communications Policy [PWG-COMM-POLICY], which was never finalized but records the Steering Committee's positions at the time.*
+- *[POLICY]: the 2021 draft of the PWG Communications Policy [PWG-COMM-POLICY-DRAFT]. The policy was approved on May 1, 2023 [PWG-COMM-POLICY], but the drafts' plans for future changes were removed from it so it could be finalized in time for PWG Process 4.0 [PWG-PROCESS]. The approved policy mainly records the role email addresses and mailing lists. Those plans were set aside, not rejected, and they record the Steering Committee's positions as of 2021. Requirements tagged [POLICY] should therefore be confirmed by the Steering Committee before they are treated as settled.*
 - *[SC]: positions stated during this renovation effort.*
 
 *The key words MUST, SHOULD and MAY are used as defined in [BCP14].*
@@ -261,7 +261,7 @@ There are many pages that provide effectively static page content. They don't ne
 
 ### Scope
 
-[PWG-COMM-POLICY] covers all PWG communications facilities. This renovation covers the **web site** and the web functions it hosts. The other facilities in the policy (role email, mailing lists, file sharing, teleconferencing, document editing) are listed under "Related Infrastructure Requirements" so the design can avoid conflicting with them and can share hosting decisions where that makes sense. They are not otherwise in scope.
+[PWG-COMM-POLICY] and its 2021 draft [PWG-COMM-POLICY-DRAFT] cover all PWG communications facilities. This renovation covers the **web site** and the web functions it hosts. The other facilities they list (role email, mailing lists, file sharing, teleconferencing, document editing) are listed under "Related Infrastructure Requirements" so the design can avoid conflicting with them and can share hosting decisions where that makes sense. They are not otherwise in scope.
 
 ### General
 
@@ -285,7 +285,7 @@ There are many pages that provide effectively static page content. They don't ne
 
 ### Web Applications
 
-- **R-7** [POLICY, SC] The site MUST provide a way for readers to report errata against published PWG documents, and a way for the PWG to track, respond to and resolve those reports (today, `dynamo/issues.php` with its database). [PWG-COMM-POLICY] asks whether this could become a GitHub project; see Open Questions.
+- **R-7** [POLICY, SC] The site MUST provide a way for readers to report errata against published PWG documents, and a way for the PWG to track, respond to and resolve those reports (today, `dynamo/issues.php` with its database). The 2021 draft Communications Policy [PWG-COMM-POLICY-DRAFT] asks whether this could become a GitHub project; see Open Questions.
 - **R-8** [POLICY] The site MUST provide a public, searchable listing of IPP Everywhere self-certified printers (today, a hand-edited `printers/printers.json` filtered in the browser).
 - **R-15** [SC] The site MUST provide a way to register successful IPP Everywhere self-certification results:
   - **R-15.1** Only authorized submitters (for example, people whose organization is entitled to submit) can make submissions.
@@ -305,7 +305,7 @@ There are many pages that provide effectively static page content. They don't ne
 
 ### Related Infrastructure Requirements
 
-These are recorded from [PWG-COMM-POLICY] for context. They are outside this renovation's scope except where the site depends on them.
+These are recorded from the 2021 draft Communications Policy [PWG-COMM-POLICY-DRAFT] for context. They are outside this renovation's scope except where the site depends on them.
 
 - Role email accounts for officers (Chair, Vice-Chair, Secretary, Webmaster and others), with a way to *send* from those addresses (for example webmail), not just forwarding.
 - A mailing list server with lists for every workgroup and `pwg-announce`, self-subscription and open archives. It also needs a private `sc` list with no self-subscription and no public archives. [SC] List mail must be delivered reliably to subscribers whose mail systems enforce SPF, DKIM and DMARC.
@@ -315,7 +315,7 @@ These are recorded from [PWG-COMM-POLICY] for context. They are outside this ren
 
 ### Standards Development Support
 
-- **R-14** [SC] The site MUST support the existing standards workflow: Word working drafts with clean and redline PDFs posted to each workgroup's `wd/` folder on the archive, and published standards in `/pub/pwg/standards/`. The renovation MUST NOT require a change in how specifications are authored or reviewed.
+- **R-14** [SC] The site MUST support the existing standards workflow: Word working drafts with clean and redline PDFs posted to each workgroup's `wd/` folder on the archive, and published standards in `/pub/pwg/standards/`. The renovation MUST NOT require a change in how specifications are authored or reviewed. (Document types, working-draft phases and approvals are defined in [PWG-DOC-MGMT-POLICY], whose examples use the same `wd/` folder URLs.)
 
 ### Open Questions
 
@@ -329,7 +329,7 @@ These are recorded from [PWG-COMM-POLICY] for context. They are outside this ren
    Option (b) keeps the public site static but makes the PWG depend on GitHub for confidentiality. Option (a) gives submitters accounts and self-service, but keeps a server-side application to maintain (R-13).
 
    **Current leaning: (a)**, as a `certification.pwg.org` subdomain that serves the public registry JSON to the static site (see Design Options). Still to decide: who may submit (any member organization, or named people), whether a PWG reviewer approves submissions before they can be released, and whether to adapt the old dynamo code or start fresh.
-4. **How private must the `sc` list be?** [PWG-COMM-POLICY] itself asks, "Isn't everything public?"
+4. **How private must the `sc` list be?** The 2021 draft Communications Policy [PWG-COMM-POLICY-DRAFT] itself asks, "Isn't everything public?"
 5. **Accounts.** Which remaining functions still need PWG-managed user accounts and roles once the questions above are decided?
 6. **ICDSoft migration gaps.** What exactly blocked or complicated the move to ICDSoft? Which services (web site, web applications, FTP archive, role email, mailing lists) can ICDSoft host, and which will need another home?
 7. **Mailing list platform.** Can the lists be fixed in place (DMARC mitigation, DKIM signing, DNS records), should they move to a newer Mailman on ICDSoft if available, or should they move to an outside list service? Either way, existing list addresses and archive URLs should be kept.
@@ -663,4 +663,7 @@ These are small and independent, and they address problems listed earlier withou
 ## References
 
 - **[BCP14]** S. Bradner, "Key words for use in RFCs to Indicate Requirement Levels", RFC 2119 / BCP 14, March 1997, https://www.rfc-editor.org/info/bcp14
-- **[PWG-COMM-POLICY]** "PWG Communications Policy", draft PWG Policy (status: Initial), May 10, 2021 (document dated April 26, 2021), https://ftp.pwg.org/pub/pwg/general/wd/wd-pwg-comm-policy-v1.0-20210510.docx (earlier PDF: https://ftp.pwg.org/pub/pwg/general/wd/wd-pwg-comm-policy-v1.0-20210426.pdf)
+- **[PWG-COMM-POLICY]** "PWG Communications Policy", PWG Policy (status: Approved), May 1, 2023, https://ftp.pwg.org/pub/pwg/general/process/pwg-comm-policy.pdf
+- **[PWG-COMM-POLICY-DRAFT]** "PWG Communications Policy", draft PWG Policy (status: Initial), May 10, 2021 (document dated April 26, 2021), https://ftp.pwg.org/pub/pwg/general/wd/wd-pwg-comm-policy-v1.0-20210510.docx (earlier PDF: https://ftp.pwg.org/pub/pwg/general/wd/wd-pwg-comm-policy-v1.0-20210426.pdf). Includes plans for future changes that were removed from the approved policy.
+- **[PWG-DOC-MGMT-POLICY]** "PWG Document Management Policy", PWG Policy (status: Approved), June 10, 2024, https://ftp.pwg.org/pub/pwg/general/process/pwg-document-management-policy.pdf
+- **[PWG-PROCESS]** "PWG Process 4.0", PWG Process (status: Approved), August 4, 2023, https://ftp.pwg.org/pub/pwg/general/process/pwg-process-4.pdf
