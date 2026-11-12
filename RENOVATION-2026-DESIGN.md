@@ -334,6 +334,7 @@ These are recorded from [PWG-COMM-POLICY] for context. They are outside this ren
 9. **Document archive size and hosting.** How large is the `ftp.pwg.org` archive, and does anyone still depend on `ftp://` protocol access (as opposed to `https://` URLs with the same paths)? Does ICDSoft offer enough storage, and anonymous FTP if needed?
 10. **Shared sign-in.** How many PWG-run applications will need sign-in, and who uses them? Is requiring a GitHub, Google or Microsoft account acceptable for all of those users, or must the PWG offer its own accounts? (See "Shared Sign-In Across Subdomains" under Design Options.)
 11. **IPP demonstration services.** Is there interest (and an owner and budget) for hosting public IPP demonstration services? Which services would be most useful to implementers? (See "Future Possibility: IPP Demonstration Services" under Proposed Architecture.)
+12. **Repository layout.** Should the served site move into a `www/` folder so that project files are never published, and should future subdomain sites (`certification.pwg.org`, `auth.pwg.org`) live in the same repository or in separate ones? Who should review changes to each site? (See "Repository Layout: Serve Only a `www/` Folder" under Design Options.)
 
 ## Proposed Architecture
 
@@ -526,6 +527,49 @@ One proposal is to host everything on GitHub and shut down the Linode VM. GitHub
 
 **Likely end state:** GitHub for the web site, its source and its build, plus the PWG's ICDSoft account, which is already intended for email administration, for role email, the document archive and any remaining server-side functions. Mailing lists go on ICDSoft or a dedicated list service, depending on which handles DMARC better. The Linode VM is shut down after the last service moves.
 
+### Repository Layout: Serve Only a `www/` Folder
+
+Today the root of the repository is also the root of the web site, so everything in a checkout sits inside the served folder. That includes `README.md`, `CONTRIBUTING.md`, `NOTICE`, this design document and the `.git/` directory. The proposal is to move everything that is served into a `www/` folder and keep project files at the top level:
+
+```
+README.md, LICENSE, NOTICE, CONTRIBUTING.md
+docs/           this design document, the test checklist (1.1), development setup notes
+tools/          test and maintenance scripts that are not part of any site
+www/            everything served at www.pwg.org, unchanged inside (dynamo/ included)
+certification/  future certification.pwg.org application (see above)
+auth/           future auth.pwg.org, if one is needed (see above)
+```
+
+Nothing changes *inside* `www/`, so every URL stays the same.
+
+**What it fixes or enables:**
+
+- **Project files are never served, on any host.** *Observed in November 2026:* a development system with its document root set to the checkout served the whole `.git/` directory, which means the full repository and its history, plus the Markdown files. Production returns 404 for these, but the rules that do it are not recorded in the repository. Phase 1 added `RedirectMatch` rules to `pwg-apache.conf` as a stopgap. With a `www/` folder the protection is built into the layout instead of depending on server rules, which matters on managed hosting where only `.htaccess` may be available (R-9).
+- **A home for project material.** The design document, the test checklist and scripts, CI configuration and an optional Docker Compose file can live in the repository without being published.
+- **Room for other sites.** `certification.pwg.org` and `auth.pwg.org` (if they are built) can each have a folder next to `www/` and share templates, styles and test tools with the main site. One pull request can then change a site and an application together.
+- **A step toward a static site generator.** A generator keeps its source and its output in separate folders anyway. `www/` could later become the generator's source or the place its output is written.
+- **A later step:** `dynamo/phplib/` and `dynamo/config/` could move out of `www/`, so that only the page scripts are inside the served folder. Their `include` paths would then need to change, so this is best done separately.
+
+**What has to change:**
+
+- **Web server configuration.** On development and staging systems, `DocumentRoot` becomes `checkout/www`. Production is set up differently: static content is copied to the archive's `pub/pwg/www` directory, and `dynamo/` is aliased in from the checkout (see Deployment and Hosting). There, the copy would come from `www/` and the alias would point at `www/dynamo/`. *(Production's exact setup should be confirmed with the infrastructure administrators before the move.)*
+- **The webhook.** `github.php` still runs `git pull` at the top of the checkout. `$SITE_DOCROOT` in `site.cfg` would keep meaning the checkout, not the web root, so it should be renamed (for example to `$SITE_CHECKOUT`) to avoid confusion.
+- **Documentation and samples:** `pwg-apache.conf`, the setup instructions in `README.md` and the paths in development scripts.
+- **Work in progress.** Git detects renamed files when merging, but branches started before the move will need a rebase or merge, and regular editors (for example of the `ipp/` pages) should be told in advance. Make the move as **one commit that only renames files**, with no content changes. That keeps Git's rename detection reliable and keeps `git log --follow` and `git blame` working across the move.
+
+**One repository or several:**
+
+| Approach | Advantages | Drawbacks |
+|----------|------------|-----------|
+| **One repository for all PWG sites** | Shared templates, styles and test tools; one place to look; suits a small volunteer team | Everyone with write access can change every site, unless GitHub's `CODEOWNERS` file and branch protection require the right reviewers for each folder. Each site needs its own deploy job, triggered by changes to its folder. Clones get bigger (already about 100 MB). |
+| **A separate repository for each site** | Separate permissions and release schedules; smaller repositories | Shared templates must be copied or packaged; a change that spans sites spans several pull requests |
+
+Either way, the certification application's *code* can be public. Pending submissions are *data* and never go in any repository (R-15.3).
+
+**Timing:** not part of Phase 1, so the PHP 8 changes can be reviewed on their own. It fits best with the move to ICDSoft (Phase 2), because production's web root and deployment have to be set up again then anyway, so production's layout changes only once. It could be done sooner if the Linode setup is easy to change.
+
+**Possible direction (not yet decided):** adopt the `www/` layout in its own pull request, as a rename-only commit, just before or during Phase 2. Start with one repository, using `CODEOWNERS` so each site folder has its own reviewers, and reconsider separate repositories if a site ends up with different maintainers. See Open Question 12.
+
 ## Upgrade Plan
 
 The upgrade is staged so the site keeps working at every step, and so the work that is needed whatever the redesign decides can start before the open questions above are settled.
@@ -608,7 +652,7 @@ These are small and independent, and they address problems listed earlier withou
 
 *To be defined once the requirements and open questions are settled.* Likely candidates:
 
-- **Phase 2: Complete the move to managed hosting.** Close the remaining ICDSoft gaps, move the FTP archive at its existing URLs, and retire the Linode VM. Mailing list remediation may run in parallel.
+- **Phase 2: Complete the move to managed hosting.** Close the remaining ICDSoft gaps, move the FTP archive at its existing URLs, and retire the Linode VM. If Open Question 12 is decided in favor, adopt the `www/` repository layout as part of setting up the new host. Mailing list remediation may run in parallel.
 - **Phase 3: Restructure the site.** Separate static content from the web applications (Open Question 1), modernize page templating and navigation so they no longer need PHP edits, and add automated checks such as link checking and HTML validation.
 - **Phase 4: Replace or retire individual web applications** (errata, IPP Everywhere listing, document registry) according to the decisions on Open Questions 2, 3 and 5.
 
