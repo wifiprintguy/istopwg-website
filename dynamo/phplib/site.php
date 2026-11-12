@@ -19,6 +19,24 @@ include_once "config/site.cfg";
 
 global $_COOKIE, $_FILES, $_GET, $_POST, $_SERVER;
 
+// No form on the site uses array fields ("name[]"), and the pages pass form
+// values straight to string functions, which throw a TypeError for an array
+// on PHP 8.  Replace any array value from a crafted request with ""...
+function
+site_drop_arrays(&$input)		// IO - $_GET, $_POST, etc.
+{
+  foreach ($input as $key => $val)
+  {
+    if (is_array($val))
+      $input[$key] = "";
+  }
+}
+
+site_drop_arrays($_COOKIE);
+site_drop_arrays($_GET);
+site_drop_arrays($_POST);
+site_drop_arrays($_REQUEST);
+
 foreach (array("argc", "argv", "PATH_INFO", "PATH_TRANSLATED", "REQUEST_METHOD", "SERVER_NAME", "SERVER_PORT", "REMOTE_ADDR") as $var)
 {
   if (array_key_exists($var, $_SERVER))
