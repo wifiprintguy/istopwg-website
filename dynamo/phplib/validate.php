@@ -10,6 +10,8 @@
 // 'validate_email()' - Validate an email address.
 //
 
+$EMAIL_REQUIREMENTS = "Please enter a valid email address.";
+
 function				// O - TRUE if OK, FALSE otherwise
 validate_email($email)			// I - Email address
 {
