@@ -50,7 +50,7 @@ foreach (array("argc", "argv", "PATH_INFO", "PATH_TRANSLATED", "REQUEST_METHOD",
 // the same way PHP does, so the site doesn't depend on that setting...
 if (!array_key_exists("argv", $_SERVER))
 {
-  $query = $_SERVER["QUERY_STRING"] ?? "";
+  $query = array_key_exists("QUERY_STRING", $_SERVER) ? $_SERVER["QUERY_STRING"] : "";
   $argv  = $query == "" ? array() : explode("+", $query);
   $argc  = count($argv);
 }
