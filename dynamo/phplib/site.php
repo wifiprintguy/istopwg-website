@@ -27,6 +27,16 @@ foreach (array("argc", "argv", "PATH_INFO", "PATH_TRANSLATED", "REQUEST_METHOD",
     $$var = "";
 }
 
+// The pages take their options from argc/argv, which PHP only sets for web
+// requests when register_argc_argv is on.  Build them from the query string
+// the same way PHP does, so the site doesn't depend on that setting...
+if (!array_key_exists("argv", $_SERVER))
+{
+  $query = $_SERVER["QUERY_STRING"] ?? "";
+  $argv  = $query == "" ? array() : explode("+", $query);
+  $argc  = count($argv);
+}
+
 // Handle PHP_SELF differently - we need to quote it properly...
 if (array_key_exists("PHP_SELF", $_SERVER))
   $PHP_SELF = htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES);
