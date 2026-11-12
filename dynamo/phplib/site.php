@@ -83,7 +83,7 @@ site_header($title = "",		// I - Additional document title
   global $html_login_url;
 
 
-  if ($LOGIN_ID != "")
+  if ($LOGIN_ID != 0)
     header("Cache-Control: no-cache");
 
   header("X-UA-Compatible: IE=9");

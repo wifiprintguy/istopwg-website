@@ -55,6 +55,9 @@
 try
 {
   $_DB = new PDO("mysql:dbname=$DB_NAME;host=$DB_HOST;charset=UTF8", $DB_USER, $DB_PASSWORD);
+
+  // PHP 8 defaults to throwing exceptions; callers check return values instead.
+  $_DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 }
 catch (PDOException $e)
 {
