@@ -145,8 +145,7 @@ switch ($op)
 
         db_query("BEGIN TRANSACTION");
 
-        reset($_POST);
-        while (list($key, $val) = each($_POST))
+        foreach ($_POST as $key => $val)
           if (substr($key, 0, 3) == "ID_")
 	  {
 	    $id = (int)substr($key, 3);
