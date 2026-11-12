@@ -591,9 +591,9 @@ html_paginate($current, $count, $perpage, $linkprefix, $linksuffix)
     print("<li><a href=\"$linkprefix$previndex$linksuffix\">&laquo;</a></li>");
 
   if ($startpage > 1)
-    print("<li><a href=\"${linkprefix}0$linksuffix\">1 &hellip;</a></li>");
+    print("<li><a href=\"{$linkprefix}0$linksuffix\">1 &hellip;</a></li>");
   else if ($startpage == 1)
-    print("<li><a href=\"${linkprefix}0$linksuffix\">1</a></li>");
+    print("<li><a href=\"{$linkprefix}0$linksuffix\">1</a></li>");
 
   for ($page = $startpage; $page <= $endpage; $page ++)
   {

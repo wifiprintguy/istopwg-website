@@ -353,7 +353,7 @@ db_search($table,			// I - Table name
 
 	if (preg_match("/^[0-9]+\$/", $word))
 	{
-	  $query .= "${subpre}id=?";
+	  $query .= "{$subpre}id=?";
 	  $subpre = " OR ";
 
           array_push($params, (int)$word);
@@ -364,7 +364,7 @@ db_search($table,			// I - Table name
           if ($type != PDO::PARAM_STR || preg_match("/(hash|_id|_date)\$/", $name))
             continue;
 
-	  $query .= "${subpre}$name LIKE ?";
+	  $query .= "{$subpre}$name LIKE ?";
 	  $subpre = " OR ";
 
 	  array_push($params, "%$word%");

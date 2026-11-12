@@ -352,7 +352,7 @@ switch ($op)
   case 'U' : // Post new/modify existing Issue
       if ($LOGIN_ID == 0)
       {
-        header("Location: $html_login_url?PAGE=" . urlencode("${html_path}dynamo/issues.php?U$id$options"));
+        header("Location: $html_login_url?PAGE=" . urlencode("{$html_path}dynamo/issues.php?U$id$options"));
 	return;
       }
 

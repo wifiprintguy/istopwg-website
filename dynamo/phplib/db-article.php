@@ -289,8 +289,8 @@ class article
       print("<p>");
       if ($links && ($LOGIN_IS_ADMIN || $LOGIN_IS_OFFICER || $this->create_id == $LOGIN_ID))
       {
-	print("<a class=\"btn btn-default $btnclass\" href=\"${html_path}dynamo/articles.php?U$this->id$options\">Edit</a>\n");
-	print("<a class=\"btn btn-default $btnclass\" href=\"${html_path}dynamo/articles.php?D$this->id$options\">Delete</a>\n");
+	print("<a class=\"btn btn-default $btnclass\" href=\"{$html_path}dynamo/articles.php?U$this->id$options\">Edit</a>\n");
+	print("<a class=\"btn btn-default $btnclass\" href=\"{$html_path}dynamo/articles.php?D$this->id$options\">Delete</a>\n");
       }
       if ($url != "")
 	print("<a class=\"btn btn-primary $btnclass\" href=\"$url\">View</a>\n");

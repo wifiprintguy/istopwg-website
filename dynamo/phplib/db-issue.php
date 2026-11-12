@@ -469,7 +469,7 @@ class issue
       $docname = $document->title;
 
     // Setup the message and headers...
-    $subject  = "${what}[$docname] Issue #$this->id: $this->title";
+    $subject  = "{$what}[$docname] Issue #$this->id: $this->title";
     $headers  = "From: $from\n"
 	       ."Reply-To: $replyto\n";
 
@@ -483,7 +483,7 @@ class issue
 	       ."\n"
 	       . wordwrap(trim($contents)) . "\n"
 	       ."\n"
-	       ."Link: ${SITE_URL}/issues/$this->id\n";
+	       ."Link: {$SITE_URL}/issues/$this->id\n";
 
     // Set message ID to track this bug...
     if ($this->create_date == $this->modify_date)

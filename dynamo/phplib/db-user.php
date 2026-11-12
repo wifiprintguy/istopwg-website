@@ -191,7 +191,7 @@ class user
         print("None");
 
       if (!$this->is_editor || !$this->is_member)
-	print("\n<a class=\"btn btn-default btn-xs\" href=\"${html_path}dynamo/request.php\">Request Additional Roles</a>");
+	print("\n<a class=\"btn btn-default btn-xs\" href=\"{$html_path}dynamo/request.php\">Request Additional Roles</a>");
     }
     html_form_field_end();
 

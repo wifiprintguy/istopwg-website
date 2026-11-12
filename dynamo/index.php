@@ -121,7 +121,7 @@ for ($i = 0, $count = 0; $i < sizeof($matches) && $count < 5; $i ++)
   $article->view("", 3, FALSE);
 }
 
-print("<p><a class=\"btn btn-default btn-xs\" href=\"${html_path}dynamo/articles.php\">View Older Articles</a></p>\n"
+print("<p><a class=\"btn btn-default btn-xs\" href=\"{$html_path}dynamo/articles.php\">View Older Articles</a></p>\n"
      ."</div></div>\n"
      ."</div></div>\n");
 

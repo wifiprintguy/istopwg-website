@@ -18,7 +18,7 @@ if ($LOGIN_ID == 0)
 
 if (!$LOGIN_IS_ADMIN)
 {
-  header("Location: ${html_path}index.html");
+  header("Location: {$html_path}index.html");
   exit(0);
 }
 

@@ -56,9 +56,9 @@ if ($html_path != "/")
   $html_path = "$html_path/";
 
 if ($SERVER_NAME == "pwg.org")
-  $html_login_url = "https://www.pwg.org${html_path}dynamo/login.php";
+  $html_login_url = "https://www.pwg.org{$html_path}dynamo/login.php";
 else
-  $html_login_url = "https://$SERVER_NAME${html_path}dynamo/login.php";
+  $html_login_url = "https://$SERVER_NAME{$html_path}dynamo/login.php";
 
 // Include necessary headers...
 include_once "auth.php";
@@ -123,33 +123,33 @@ site_header($title = "",		// I - Additional document title
 		."          <ul class=\"dropdown-menu\" role=\"menu\">\n";
 
     if ($LOGIN_IS_ADMIN || $LOGIN_IS_OFFICER)
-      $userlogin .= "            <li><a href=\"${html_path}dynamo/articles.php\">Manage Articles</a></li>\n";
+      $userlogin .= "            <li><a href=\"{$html_path}dynamo/articles.php\">Manage Articles</a></li>\n";
 
     if ($LOGIN_IS_ADMIN || $LOGIN_IS_OFFICER || $LOGIN_IS_EDITOR)
-      $userlogin .= "            <li><a href=\"${html_path}dynamo/documents.php\">Manage Documents</a></li>\n";
+      $userlogin .= "            <li><a href=\"{$html_path}dynamo/documents.php\">Manage Documents</a></li>\n";
 
     if ($LOGIN_IS_ADMIN)
-      $userlogin .= "            <li><a href=\"${html_path}dynamo/organizations.php\">Manage Organizations</a></li>\n"
-                   ."            <li><a href=\"${html_path}dynamo/accounts.php\">Manage Users</a></li>\n"
-                   ."            <li><a href=\"${html_path}dynamo/workgroups.php\">Manage Workgroups</a></li>\n";
+      $userlogin .= "            <li><a href=\"{$html_path}dynamo/organizations.php\">Manage Organizations</a></li>\n"
+                   ."            <li><a href=\"{$html_path}dynamo/accounts.php\">Manage Users</a></li>\n"
+                   ."            <li><a href=\"{$html_path}dynamo/workgroups.php\">Manage Workgroups</a></li>\n";
 
     if ($LOGIN_IS_EDITOR)
-      $userlogin .= "            <li><a href=\"${html_path}dynamo/issues.php\">Review Issues</a></li>\n";
+      $userlogin .= "            <li><a href=\"{$html_path}dynamo/issues.php\">Review Issues</a></li>\n";
 
     if ($LOGIN_IS_ADMIN || $LOGIN_IS_MEMBER)
-      $userlogin .= "            <li><a href=\"${html_path}dynamo/evesubmit.php\">Submit Self-Certification</a></li>\n";
+      $userlogin .= "            <li><a href=\"{$html_path}dynamo/evesubmit.php\">Submit Self-Certification</a></li>\n";
 
     if ($LOGIN_IS_ADMIN || $LOGIN_IS_OFFICER)
     {
       $userlogin .= "            <li><a href=\"https://www.pwg.org/awstats/awstats.pl\">View HTTP Usage</a></li>\n";
-//      $userlogin .= "            <li><a href=\"${html_path}ftp-usage\">View FTP Usage</a></li>\n";
+//      $userlogin .= "            <li><a href=\"{$html_path}ftp-usage\">View FTP Usage</a></li>\n";
     }
 
     if ($LOGIN_IS_ADMIN || $LOGIN_IS_EDITOR || $LOGIN_IS_OFFICER || $LOGIN_IS_MEMBER)
       $userlogin .= "            <li class=\"divider\"></li>\n";
 
-    $userlogin .= "            <li><a href=\"${html_path}dynamo/account.php\">Profile</a></li>\n"
-		 ."            <li><a href=\"${html_path}dynamo/logout.php\">Logout</a></li>\n"
+    $userlogin .= "            <li><a href=\"{$html_path}dynamo/account.php\">Profile</a></li>\n"
+		 ."            <li><a href=\"{$html_path}dynamo/logout.php\">Logout</a></li>\n"
 		 ."          </ul>\n"
 		 ."        </li>";
   }
@@ -171,8 +171,8 @@ site_header($title = "",		// I - Additional document title
        ."<link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.google.com/cse/style/look/default.css\" type=\"text/css\">\n"
        ."<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">\n"
        ."<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css\" integrity=\"sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp\" crossorigin=\"anonymous\">\n"
-       ."<link rel=\"stylesheet\" type=\"text/css\" href=\"${html_path}dynamo/resources/pwg.css\">\n"
-       ."<link rel=\"shortcut icon\" href=\"${html_path}dynamo/resources/pwg@2x.png\" "
+       ."<link rel=\"stylesheet\" type=\"text/css\" href=\"{$html_path}dynamo/resources/pwg.css\">\n"
+       ."<link rel=\"shortcut icon\" href=\"{$html_path}dynamo/resources/pwg@2x.png\" "
        ."type=\"image/png\">\n"
        ."</head>\n");
 
@@ -185,50 +185,50 @@ site_header($title = "",		// I - Additional document title
        ."  <div class=\"container-fluid\">\n"
        ."    <div class=\"navbar-header\">\n"
        ."      <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\"#pwg-nav-collapsible\"><span class=\"sr-only\">Toggle navigation</span><span class=\"icon-bar\"></span><span class=\"icon-bar\"></span><span class=\"icon-bar\"></span></button>\n"
-       ."      <a class=\"navbar-brand\" href=\"{$html_path}\"><img src=\"${html_path}dynamo/resources/pwg-4dark.png\" alt=\"PWG Logo\" "
+       ."      <a class=\"navbar-brand\" href=\"{$html_path}\"><img src=\"{$html_path}dynamo/resources/pwg-4dark.png\" alt=\"PWG Logo\" "
        ."height=\"27\" width=\"28\"></a>\n"
        ."    </div>\n"
        ."    <div class=\"collapse navbar-collapse\" id=\"pwg-nav-collapsible\">\n"
        ."      <ul class=\"nav navbar-nav\">\n"
        ."        $userlogin\n"
-       ."        <li><a href=\"${html_path}index.html\">Home</a></li>\n"
+       ."        <li><a href=\"{$html_path}index.html\">Home</a></li>\n"
        ."        <li class=\"dropdown\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">About <span class=\"caret\"></span></a>\n"
        ."          <ul class=\"dropdown-menu\" role=\"menu\">\n"
-       ."            <li><a href=\"${html_path}about.html\">About the PWG</a></li>\n"
-       ."            <li><a href=\"${html_path}members.html#JOINING\">Joining</a></li>\n"
-       ."            <li><a href=\"${html_path}members.html\">Members</a></li>\n"
-       ."            <li><a href=\"${html_path}chair/index.html\">Officers</a></li>\n"
+       ."            <li><a href=\"{$html_path}about.html\">About the PWG</a></li>\n"
+       ."            <li><a href=\"{$html_path}members.html#JOINING\">Joining</a></li>\n"
+       ."            <li><a href=\"{$html_path}members.html\">Members</a></li>\n"
+       ."            <li><a href=\"{$html_path}chair/index.html\">Officers</a></li>\n"
        ."            <li class=\"divider\"></li>\n"
-       ."            <li><a href=\"${html_path}bofs.html\">BOF Sessions</a></li>\n"
-       ."            <li><a href=\"${html_path}mailhelp.html\">Mailing Lists</a></li>\n"
-       ."            <li><a href=\"${html_path}chair/meeting-info/meetings.html\">Meetings</a></li>\n"
-       ."            <li><a href=\"${html_path}chair/participating.html\">Participating</a></li>\n"
+       ."            <li><a href=\"{$html_path}bofs.html\">BOF Sessions</a></li>\n"
+       ."            <li><a href=\"{$html_path}mailhelp.html\">Mailing Lists</a></li>\n"
+       ."            <li><a href=\"{$html_path}chair/meeting-info/meetings.html\">Meetings</a></li>\n"
+       ."            <li><a href=\"{$html_path}chair/participating.html\">Participating</a></li>\n"
        ."            <li><a href=\"https://ieee-isto.org/privacy-policy/\">Privacy Policy</a></li>\n"
        ."          </ul>\n"
        ."        </li>\n"
        ."        <li class=\"dropdown\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Our Work <span class=\"caret\"></span></a>\n"
        ."          <ul class=\"dropdown-menu\" role=\"menu\">\n"
        ."            <li class=\"dropdown-header\" role=\"presentation\">Publications</li>\n"
-       ."            <li><a href=\"${html_path}informational.html\">Informational Documents</a></li>\n"
-       ."            <li><a href=\"${html_path}namespaces.html\">Namespaces</a></li>\n"
-       ."            <li><a href=\"${html_path}standards.html\">Standards</a></li>\n"
+       ."            <li><a href=\"{$html_path}informational.html\">Informational Documents</a></li>\n"
+       ."            <li><a href=\"{$html_path}namespaces.html\">Namespaces</a></li>\n"
+       ."            <li><a href=\"{$html_path}standards.html\">Standards</a></li>\n"
        ."            <li class=\"divider\"></li>\n"
        ."            <li class=\"dropdown-header\" role=\"presentation\">Technologies</li>\n"
-       ."            <li><a href=\"${html_path}3d/index.html\">3D Printing</a></li>\n"
-       ."            <li><a href=\"${html_path}ipp/everywhere.html\">IPP Everywhere&trade;</a></li>\n"
-       ."            <li><a href=\"${html_path}sm/model.html\">PWG Semantic Model</a></li>\n"
+       ."            <li><a href=\"{$html_path}3d/index.html\">3D Printing</a></li>\n"
+       ."            <li><a href=\"{$html_path}ipp/everywhere.html\">IPP Everywhere&trade;</a></li>\n"
+       ."            <li><a href=\"{$html_path}sm/model.html\">PWG Semantic Model</a></li>\n"
        ."          </ul>\n"
        ."        </li>\n"
        ."        <li class=\"dropdown\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Workgroups <span class=\"caret\"></span></a>\n"
        ."          <ul class=\"dropdown-menu\" role=\"menu\">\n"
        ."            <li class=\"dropdown-header\" role=\"presentation\">Active Workgroups</li>\n"
-       ."            <li><a href=\"${html_path}ids/\">Imaging Device Security</a></li>\n"
-       ."            <li><a href=\"${html_path}ipp/\">Internet Printing Protocol</a></li>\n"
+       ."            <li><a href=\"{$html_path}ids/\">Imaging Device Security</a></li>\n"
+       ."            <li><a href=\"{$html_path}ipp/\">Internet Printing Protocol</a></li>\n"
        ."            <li class=\"divider\"></li>\n"
        ."            <li class=\"dropdown-header\" role=\"presentation\">Inactive Workgroups</li>\n"
-       ."            <li><a href=\"${html_path}cloud/\">Cloud Imaging Model</a></li>\n"
-       ."            <li><a href=\"${html_path}sm/\">Semantic Model</a></li>\n"
-       ."            <li><a href=\"${html_path}wims/\">Workgroup for Imaging Management Solutions</a></li>\n"
+       ."            <li><a href=\"{$html_path}cloud/\">Cloud Imaging Model</a></li>\n"
+       ."            <li><a href=\"{$html_path}sm/\">Semantic Model</a></li>\n"
+       ."            <li><a href=\"{$html_path}wims/\">Workgroup for Imaging Management Solutions</a></li>\n"
        ."          </ul>\n"
        ."        </li>\n"
        ."        <li><a href=\"#modalSearch\" data-toggle=\"modal\" data-target=\"#modalSearch\">Search</a></li>\n"
@@ -294,7 +294,7 @@ site_footer($javascript = "")
        ."material is Copyright &copy; 2001-$year The Printer Working Group. "
        ."All rights reserved. IPP Everywhere, the IPP Everywhere logo, and the "
        ."PWG logo are trademarks of the ISTO.<br>\n"
-       ."<a href=\"${html_path}about.html\">About the PWG</a> "
+       ."<a href=\"{$html_path}about.html\">About the PWG</a> "
        ."&middot; "
        ."<a href=\"https://ieee-isto.org/privacy-policy/\">Privacy Policy</a> "
        ."&middot; "
@@ -303,10 +303,10 @@ site_footer($javascript = "")
        ."<script src=\"https://code.jquery.com/jquery-3.2.1.min.js\"   integrity=\"sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=\" crossorigin=\"anonymous\"></script>\n"
        ."<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\" integrity=\"sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa\" crossorigin=\"anonymous\"></script>\n");
   print("<script type=\"text/javascript\" src=\"//www.google.com/jsapi\"></script>\n"
-       ."<script type=\"text/javascript\" src=\"${html_path}dynamo/resources/pwg.js\"></script>\n"
-       ."<script type=\"text/javascript\" src=\"${html_path}dynamo/resources/pwg-cookie-notice.js\"></script>\n");
+       ."<script type=\"text/javascript\" src=\"{$html_path}dynamo/resources/pwg.js\"></script>\n"
+       ."<script type=\"text/javascript\" src=\"{$html_path}dynamo/resources/pwg-cookie-notice.js\"></script>\n");
   if ($javascript != "")
-    print("<script type=\"text/javascript\" src=\"${html_path}dynamo/resources/$javascript\"></script>\n");
+    print("<script type=\"text/javascript\" src=\"{$html_path}dynamo/resources/$javascript\"></script>\n");
   print("</body>\n"
        ."</html>\n");
 }
