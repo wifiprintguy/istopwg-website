@@ -1,2 +1,2 @@
 # Don't allow remote access to this directory.
-Deny from all
+Require all denied
