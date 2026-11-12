@@ -129,21 +129,29 @@ switch ($op)
       {
 	$status = (int)$_POST["STATUS"];
 
-        db_query("BEGIN TRANSACTION");
+        // Update all of the selected documents or none of them...
+        $ok = db_begin();
 
         foreach ($_POST as $key => $val)
-          if (substr($key, 0, 3) == "ID_")
+          if ($ok && substr($key, 0, 3) == "ID_")
 	  {
 	    $id = (int)substr($key, 3);
 	    $document = new document($id);
 	    if ($document->id == $id)
 	    {
 	      $document->status = $status;
-	      $document->save();
+	      $ok = $document->save();
 	    }
 	  }
 
-        db_query("COMMIT TRANSACTION");
+        if (!$ok || !db_commit())
+        {
+          db_rollback();
+          site_header("Manage Documents");
+          html_show_error("Unable to update the selected documents. No changes were made.");
+          site_footer();
+          exit();
+        }
       }
 
       header("Location: $PHP_SELF?L$options");

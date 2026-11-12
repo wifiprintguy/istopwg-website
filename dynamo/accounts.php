@@ -149,22 +149,30 @@ switch ($op)
       {
 	$op = $_POST["OP"];
 
-        db_query("BEGIN TRANSACTION");
+        // Update all of the selected accounts or none of them...
+        $ok = db_begin();
 
         foreach ($_POST as $key => $val)
-          if (substr($key, 0, 3) == "ID_")
+          if ($ok && substr($key, 0, 3) == "ID_")
 	  {
 	    $id = (int)substr($key, 3);
 
             if ($op == "ban")
-              db_query("UPDATE user SET status = 0 WHERE id = $id");
+              $ok = db_query("UPDATE user SET status = 0 WHERE id = $id") !== null;
             else if ($op == "enable")
-              db_query("UPDATE user SET status = 2 WHERE id = $id");
+              $ok = db_query("UPDATE user SET status = 2 WHERE id = $id") !== null;
             else if ($op == "delete")
-              db_query("UPDATE user SET status = 3 WHERE id = $id");
+              $ok = db_query("UPDATE user SET status = 3 WHERE id = $id") !== null;
 	  }
 
-        db_query("COMMIT TRANSACTION");
+        if (!$ok || !db_commit())
+        {
+          db_rollback();
+          site_header("Manage Users");
+          html_show_error("Unable to update the selected accounts. No changes were made.");
+          accounts_footer();
+          exit();
+        }
       }
 
       header("Location: $PHP_SELF?L$options");

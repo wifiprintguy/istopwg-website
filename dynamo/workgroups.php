@@ -143,21 +143,29 @@ switch ($op)
       {
 	$status = (int)$_POST["STATUS"];
 
-        db_query("BEGIN TRANSACTION");
+        // Update all of the selected workgroups or none of them...
+        $ok = db_begin();
 
         foreach ($_POST as $key => $val)
-          if (substr($key, 0, 3) == "ID_")
+          if ($ok && substr($key, 0, 3) == "ID_")
 	  {
 	    $id = (int)substr($key, 3);
 	    $workgroup = new workgroup($id);
 	    if ($workgroup->id == $id)
 	    {
 	      $workgroup->status = $status;
-	      $workgroup->save();
+	      $ok = $workgroup->save();
 	    }
 	  }
 
-        db_query("COMMIT TRANSACTION");
+        if (!$ok || !db_commit())
+        {
+          db_rollback();
+          site_header("Manage Workgroups");
+          html_show_error("Unable to update the selected workgroups. No changes were made.");
+          workgroups_footer();
+          exit();
+        }
       }
 
       header("Location: $PHP_SELF?L$options");

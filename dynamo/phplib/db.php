@@ -54,7 +54,13 @@
 // DB_NAME variables that are set in config/site.cfg...
 try
 {
-  $_DB = new PDO("mysql:dbname=$DB_NAME;host=$DB_HOST;charset=UTF8", $DB_USER, $DB_PASSWORD);
+  // Have UPDATE report the rows it matched, not just the rows it changed, so
+  // that saving an object with unchanged values still counts as success.
+  // (The constant moved to Pdo\Mysql in PHP 8.4; the old name is deprecated
+  // in 8.5.)
+  $found_rows = defined("Pdo\\Mysql::ATTR_FOUND_ROWS") ? constant("Pdo\\Mysql::ATTR_FOUND_ROWS") : constant("PDO::MYSQL_ATTR_FOUND_ROWS");
+
+  $_DB = new PDO("mysql:dbname=$DB_NAME;host=$DB_HOST;charset=UTF8", $DB_USER, $DB_PASSWORD, array($found_rows => TRUE));
 
   // PHP 8 defaults to throwing exceptions; callers check return values instead.
   $_DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
@@ -66,6 +72,52 @@ catch (PDOException $e)
   print("<p>Please report the problem to <a href='mailto:$DB_ADMIN'>"
        ."$DB_ADMIN</a>.</p>\n");
   exit();
+}
+
+
+//
+// 'db_begin()' - Start a transaction.
+//
+
+function				// O - TRUE on success, FALSE otherwise
+db_begin()
+{
+  global $_DB;
+
+
+  return ($_DB->beginTransaction());
+}
+
+
+//
+// 'db_commit()' - Commit the current transaction.
+//
+
+function				// O - TRUE on success, FALSE otherwise
+db_commit()
+{
+  global $_DB;
+
+
+  return ($_DB->commit());
+}
+
+
+//
+// 'db_rollback()' - Roll back the current transaction.
+//
+
+function				// O - TRUE on success, FALSE otherwise
+db_rollback()
+{
+  global $_DB;
+
+
+  // rollBack() throws if no transaction is active, even in silent mode...
+  if (!$_DB->inTransaction())
+    return (FALSE);
+
+  return ($_DB->rollBack());
 }
 
 
