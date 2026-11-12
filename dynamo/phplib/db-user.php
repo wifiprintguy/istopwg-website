@@ -72,11 +72,11 @@ class user
 
 
   //
-  // 'user::user()' - Create a user object.
+  // 'user::__construct()' - Create a user object.
   //
 
   function				// O - New user object
-  user($id = 0)				// I - ID, if any
+  __construct($id = 0)				// I - ID, if any
   {
     if ($id> 0)
       $this->load($id);

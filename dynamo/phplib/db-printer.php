@@ -47,11 +47,11 @@ class printer
 
 
   //
-  // 'printer::printer()' - Create a printer object.
+  // 'printer::__construct()' - Create a printer object.
   //
 
   function				// O - New Article object
-  printer($id = 0)			// I - ID, if any
+  __construct($id = 0)			// I - ID, if any
   {
     if ($id > 0)
       $this->load($id);

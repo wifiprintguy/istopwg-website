@@ -49,11 +49,11 @@ class organization
 
 
   //
-  // 'organization::organization()' - Create a organization object.
+  // 'organization::__construct()' - Create a organization object.
   //
 
   function				// O - New organization object
-  organization($id = 0)			// I - ID, if any
+  __construct($id = 0)			// I - ID, if any
   {
     if ($id > 0)
       $this->load($id);

@@ -88,11 +88,11 @@ class document
 
 
   //
-  // 'document::document()' - Create a document object.
+  // 'document::__construct()' - Create a document object.
   //
 
   function				// O - New document object
-  document($id = 0)			// I - ID, if any
+  __construct($id = 0)			// I - ID, if any
   {
     if ($id > 0)
       $this->load($id);

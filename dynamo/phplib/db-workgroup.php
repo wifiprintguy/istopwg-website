@@ -55,11 +55,11 @@ class workgroup
 
 
   //
-  // 'workgroup::workgroup()' - Create a workgroup object.
+  // 'workgroup::__construct()' - Create a workgroup object.
   //
 
   function				// O - New workgroup object
-  workgroup($id = 0)			// I - ID, if any
+  __construct($id = 0)			// I - ID, if any
   {
     if ($id > 0)
       $this->load($id);

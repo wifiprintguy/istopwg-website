@@ -30,11 +30,11 @@ class comment
 
 
   //
-  // 'comment::comment()' - Create a comment object.
+  // 'comment::__construct()' - Create a comment object.
   //
 
   function				// O - New comment object
-  comment($id = 0)			// I - ID, if any
+  __construct($id = 0)			// I - ID, if any
   {
     if ($id > 0)
       $this->load($id);

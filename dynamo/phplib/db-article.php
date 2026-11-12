@@ -38,11 +38,11 @@ class article
 
 
   //
-  // 'article::article()' - Create an article object.
+  // 'article::__construct()' - Create an article object.
   //
 
   function				// O - New article object
-  article($id = 0)				// I - ID, if any
+  __construct($id = 0)				// I - ID, if any
   {
     if ($id > 0)
       $this->load($id);
