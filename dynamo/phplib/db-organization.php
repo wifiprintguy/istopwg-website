@@ -9,9 +9,9 @@ $ORGANIZATION_COLUMNS = array(
   "status" => PDO::PARAM_INT,
   "name" => PDO::PARAM_STR,
   "domain" => PDO::PARAM_STR,
-  "create_date" => PDO::PARAM_INT,
+  "create_date" => PDO::PARAM_STR,
   "create_id" => PDO::PARAM_STR,
-  "modify_date" => PDO::PARAM_INT,
+  "modify_date" => PDO::PARAM_STR,
   "modify_id" => PDO::PARAM_STR
 );
 
